@@ -1,0 +1,10 @@
+
+/build
+/srcarm7/build
+
+*.elf
+*.nds
+
+
+*.ml1
+/release*
