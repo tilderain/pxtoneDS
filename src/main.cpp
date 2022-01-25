@@ -107,13 +107,13 @@ int main(int argc, char *argv[])
 	TIMER2_DATA = TIMER_FREQ_256(1000); //1000ms
 	TIMER2_CR = TIMER_ENABLE | ClockDivider_256 | TIMER_IRQ_REQ; 
 	irqEnable(IRQ_TIMER2);
-	irqSet(IRQ_TIMER2, Timer_1ms);
+	//irqSet(IRQ_TIMER2, Timer_1ms);
 
 	while (true)
 	{
 		//printf("lol\n");
 		//printf("Memory: %d %d %d\n", mallinfo().arena, mallinfo().uordblks, mallinfo().fordblks);
-
+		pxtn->Moo( NULL, 368);
 		swiWaitForVBlank();
 	}
 	

@@ -170,6 +170,7 @@ bool pxtnService::_moo_PXTONE_SAMPLE( int smp_num )
 						if( p_vi->env_size ) p_tone->env_volume = p_tone->env_start  =   0; // envelope
 						else                 p_tone->env_volume = p_tone->env_start  = 128; // no-envelope
 					}
+					p_tone->dirty = true;
 				}
 				break;
 			}

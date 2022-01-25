@@ -119,6 +119,7 @@ typedef struct
 	u8 volLast;
 	int32_t keyLast;
 	u8 panLast;
+	bool dirty;
 	
 }
 pxtnVOICETONE;

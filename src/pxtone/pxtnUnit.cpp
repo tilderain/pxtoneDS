@@ -235,9 +235,16 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 					p_vt->volLast = volume;
 					p_vt->keyLast = _key_now;
 					p_vt->panLast = _pan_vols[0];
+					p_vt->dirty = false;
 				}
 				else
 				{
+					if(p_vt->dirty)
+					{
+						soundKill(p_vt->channelId);
+						soundResume(p_vt->channelId);
+						p_vt->dirty = false;
+					}
 					u8 volume = _v_VELOCITY * _v_VOLUME / 128;
 					u8 pan = _pan_vols[0];
 					if(volume != p_vt->volLast)
@@ -255,11 +262,6 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 					{
 						p_vt->panLast = pan;
 						soundSetPan(p_vt->channelId, pan-1);
-					}
-
-					if(!(_p_woice->get_voice(v)->voice_flags & PTV_VOICEFLAG_WAVELOOP))
-					{
-						soundResume(p_vt->channelId);
 					}
 
 				}
