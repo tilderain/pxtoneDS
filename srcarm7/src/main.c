@@ -85,7 +85,7 @@ int main() {
 	SetYtrigger(80);
 
 	installWifiFIFO();
-	installSoundFIFO();
+	installSoundeFIFO();
 
 	installSystemFIFO();
 

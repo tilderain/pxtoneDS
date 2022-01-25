@@ -193,7 +193,7 @@ bool pxtnService::_moo_PXTONE_SAMPLE( int smp_num )
 	
 	// sampling..
 	
-	for( int32_t u = 0; u < 4; u++ )
+	for( int32_t u = 0; u < _unit_num; u++ )
 	{
 		int32_t  key_now = _units[ u ]->Tone_Increment_Key(0);
 		_units[ u ]->Tone_Sample( _moo_b_mute_by_unit, _dst_ch_num, _moo_time_pan_index, _moo_smp_smooth,

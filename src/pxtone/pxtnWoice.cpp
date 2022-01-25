@@ -334,7 +334,7 @@ pxtnERR pxtnWoice::Tone_Ready_sample( const pxtnPulse_NoiseBuilder *ptn_bldr )
 	pxtnPulse_PCM      pcm_work;
 
 	int32_t            ch    =     1;
-	int32_t            sps   = 22050;
+	int32_t            sps   = 44100;
 	int32_t            bps   =    16;
 
 	for( int32_t v = 0; v < _voice_num; v++ )

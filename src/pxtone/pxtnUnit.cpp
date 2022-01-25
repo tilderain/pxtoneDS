@@ -124,13 +124,7 @@ void pxtnUnit::Tone_Key( int32_t  key )
 
 void pxtnUnit::Tone_Pan_Volume( int32_t ch, int32_t  pan )
 {
-	_pan_vols[ 0 ] = 64;
-	_pan_vols[ 1 ] = 64;
-	if( ch == 2 )
-	{
-		if( pan >= 64 )_pan_vols[ 0 ] = 128 - pan;
-		else           _pan_vols[ 1 ] =       pan;
-	}
+	_pan_vols[ 0 ] = pan;
 }
 
 void pxtnUnit::Tone_Pan_Time( int32_t ch, int32_t  pan, int32_t sps )
@@ -194,6 +188,8 @@ void pxtnUnit::Tone_Envelope()
 #include "memory.h"
 
 
+#define SOUND_FREQ(n)	((-0x1000000 / (n)))
+
 void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_pan_index, int32_t  smooth_smp , float freq)
 {
 	if( !_p_woice ) return;
@@ -227,21 +223,23 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 					channelStates[p_vt->channelId] = 1;
 
 					u8 volume = _v_VELOCITY * _v_VOLUME / 128;
-					u32 pitch = freq * 22050/4;
+		
+					int pitchint = p_vt->offset_freq * _v_TUNING * freq * 22050/2;
+					u16 pitch = SOUND_FREQ(pitchint);
+
 					DC_FlushRange(p_vi->p_smp_w, p_vi->smp_body_w*2);
-					soundPlaySampleC(p_vi->p_smp_w, SoundFormat_16Bit, (u32)p_vi->smp_body_w, 
+					soundPlaySampleC(p_vi->p_smp_w, SoundFormat_16Bit, (u32)p_vi->smp_body_w*2, 
 						(u32)pitch, (u8)volume-1, (u8)_pan_vols[0]-1, 
 						_p_woice->get_voice(v)->voice_flags & PTV_VOICEFLAG_WAVELOOP, (u16)0, p_vt->channelId);
 
 					p_vt->volLast = volume;
 					p_vt->keyLast = _key_now;
-					p_vt->panLast = _pan_vols[0]-1;
-
+					p_vt->panLast = _pan_vols[0];
 				}
 				else
 				{
 					u8 volume = _v_VELOCITY * _v_VOLUME / 128;
-					u8 pan = _pan_vols[0]-1;
+					u8 pan = _pan_vols[0];
 					if(volume != p_vt->volLast)
 					{
 						p_vt->volLast = volume;
@@ -250,12 +248,13 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 					if(_key_now != p_vt->keyLast)
 					{
 						p_vt->keyLast = _key_now;
-						soundSetFreq(p_vt->channelId, freq * 22050/4);
+						int pitchint = p_vt->offset_freq * _v_TUNING * freq * 22050/2 ;
+						soundSetFreq(p_vt->channelId, SOUND_FREQ(pitchint));
 					}
 					if(pan != p_vt->panLast)
 					{
 						p_vt->panLast = pan;
-						soundSetPan(p_vt->channelId, pan);
+						soundSetPan(p_vt->channelId, pan-1);
 					}
 
 					if(!(_p_woice->get_voice(v)->voice_flags & PTV_VOICEFLAG_WAVELOOP))
@@ -294,7 +293,14 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 					//printf("killing sound %d\n", p_vt->channelId);
 					if(_p_woice->get_voice(v)->voice_flags & PTV_VOICEFLAG_WAVELOOP)
 					{
-						soundSetVolume(p_vt->channelId, 0);
+						if(p_vt->volLast != 0)
+							soundSetVolume(p_vt->channelId, 0);
+						p_vt->volLast = 0;
+					}
+					else
+					{
+						if(p_vt->volLast != 0)
+							soundKill(p_vt->channelId);
 						p_vt->volLast = 0;
 					}
 					//channelStates[p_vt->channelId] = 0;

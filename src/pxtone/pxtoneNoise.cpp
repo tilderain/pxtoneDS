@@ -9,7 +9,7 @@
 pxtoneNoise::pxtoneNoise()
 {
 	_bldr   = NULL ;
-	_sps    = 22050;
+	_sps    = 44100;
 	_ch_num =     1;
 	_bps    =    16;
 }
