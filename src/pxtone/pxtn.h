@@ -5,7 +5,7 @@
 #ifndef pxtn_H
 #define pxtn_H
 
-//#define pxINCLUDE_OGGVORBIS 1
+#define pxINCLUDE_OGGVORBIS 1
 // $(SolutionDir)libogg\include;$(SolutionDir)libvorbis\include;
 
 #if defined(_WIN32)

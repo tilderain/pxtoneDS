@@ -89,12 +89,14 @@ export TOPDIRREAL	:=	$(CURDIR)
 
 export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
 					$(foreach dir,$(SOURCES)/pxtone/,$(CURDIR)/$(dir)) \
+					$(foreach dir,$(SOURCES)/pxtone/libogg,$(CURDIR)/$(dir)) \
 					$(foreach dir,$(DATA),$(CURDIR)/$(dir)) \
 					$(foreach dir,$(SPRITES),$(CURDIR)/$(dir))
 
 export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 
 CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
+CFILES	+=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/pxtone/libogg/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 CPPFILES	+=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/pxtone/*.cpp)))
 

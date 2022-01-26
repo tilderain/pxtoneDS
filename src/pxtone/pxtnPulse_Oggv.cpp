@@ -3,8 +3,8 @@
 
 #ifdef pxINCLUDE_OGGVORBIS
 
-#include <vorbis/codec.h>
-#include <vorbis/vorbisfile.h>
+#include "libogg/ivorbiscodec.h"
+#include "libogg/ivorbisfile.h"
 
 #include "./pxtnPulse_Oggv.h"
 
@@ -42,7 +42,7 @@ static size_t _mread( void *p, size_t size, size_t nmemb, void* p_void )
 	return nmemb;
 }
 
-static int _mseek( void* p_void, ogg_int64_t offset, int32_t mode )
+static int _mseek( void* p_void, ogg_int64_t offset, int mode )
 {
 	int32_t newpos;
 	OVMEM *pom = (OVMEM*)p_void;
@@ -193,7 +193,7 @@ pxtnERR pxtnPulse_Oggv::Decode( pxtnPulse_PCM * p_pcm ) const
     oc.seek_func  = _mseek       ;
     oc.close_func = _mclose_dummy;
     oc.tell_func  = _mtell       ;
-  
+  	char    pcmout[ 4096 ] = {0}; //take 4k out of the data segment, not the stack
     switch( ov_open_callbacks( &ovmem, &vf, NULL, 0, oc ) )
 	{
 	case OV_EREAD     : res = pxtnERR_ogg; goto term; //{printf("A read from media returned an error.\n");exit(1);} 
@@ -203,11 +203,11 @@ pxtnERR pxtnPulse_Oggv::Decode( pxtnPulse_PCM * p_pcm ) const
 	case OV_EFAULT    : res = pxtnERR_ogg; goto term; //{printf("Internal logic fault; indicates a bug or heap/stack corruption. \n");exit(1);}
 	default: break;
     }
-
+	
     vi    = ov_info( &vf,-1 );
 	
-	int32_t current_section;
-	char    pcmout[ 4096 ] = {0}; //take 4k out of the data segment, not the stack
+	int current_section;
+
 	{
 		int32_t smp_num = (int32_t)ov_pcm_total( &vf, -1 );
 		uint32_t bytes;
@@ -223,7 +223,7 @@ pxtnERR pxtnPulse_Oggv::Decode( pxtnPulse_PCM * p_pcm ) const
 		uint8_t  *p  = (uint8_t*)p_pcm->get_p_buf_variable();
 		do
 		{
-			ret = ov_read( &vf, pcmout, 4096, 0, 2, 1, &current_section );
+			ret = ov_read( &vf, pcmout, 4096, &current_section );
 			if( ret > 0 ) memcpy( p, pcmout, ret ); //fwrite( pcmout, 1, ret, of );
 			p += ret;
 		}
