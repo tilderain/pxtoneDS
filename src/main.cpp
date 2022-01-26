@@ -129,7 +129,8 @@ int main(int argc, char *argv[])
 
 	b_ret = true;
 term:
-
+	printf("by\n");
+	swiWaitForVBlank();
 	SAFE_DELETE( pxtn );
 	return 1;
 }

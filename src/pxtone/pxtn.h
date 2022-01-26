@@ -28,6 +28,8 @@ pxtnPOINT;
 
 #include "./pxtnError.h"
 
+#include "nds.h"
+
 #ifndef SAFE_DELETE
 #define SAFE_DELETE(p) { if( p ){ delete( p ); p = NULL; } }
 #endif
