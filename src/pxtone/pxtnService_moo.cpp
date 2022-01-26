@@ -198,7 +198,7 @@ bool pxtnService::_moo_PXTONE_SAMPLE( int smp_num )
 	{
 		int32_t  key_now = _units[ u ]->Tone_Increment_Key(0);
 		_units[ u ]->Tone_Sample( _moo_b_mute_by_unit, _dst_ch_num, _moo_time_pan_index, _moo_smp_smooth,
-			_moo_freq->Get2( key_now ) *_moo_smp_stride);
+			_moo_freq->Get2( key_now ) *_moo_smp_stride, _moo_fade_fade, _moo_fade_count, _moo_fade_max);
 	}
 
 	/*for( int32_t ch = 0; ch < _dst_ch_num; ch++ )
@@ -242,13 +242,17 @@ bool pxtnService::_moo_PXTONE_SAMPLE( int smp_num )
 	// fade out
 	if( _moo_fade_fade < 0 )
 	{
-		if( _moo_fade_count > 0  ) _moo_fade_count--;
+		if( _moo_fade_count > 0  ) 
+		{
+			_moo_fade_count-= smp_num;
+			if(_moo_fade_count < 0) _moo_fade_count = 0;
+		}
 		else return false;
 	}
 	// fade in
 	else if( _moo_fade_fade > 0 )
 	{
-		if( _moo_fade_count < (_moo_fade_max << 8) ) _moo_fade_count++;
+		if( _moo_fade_count < (_moo_fade_max << 8) ) _moo_fade_count += smp_num;
 		else                                         _moo_fade_fade = 0;
 	}
 
@@ -300,6 +304,8 @@ bool pxtnService::moo_set_loop        ( bool b ){ if( !_moo_b_init ) return fals
 bool pxtnService::moo_set_fade( int32_t  fade, float sec )
 {
 	if( !_moo_b_init ) return false;
+
+	printf("fade\n");
 	_moo_fade_max = (int32_t)( (float)_dst_sps * sec ) >> 8;
 	if(      fade < 0 ){ _moo_fade_fade  = -1; _moo_fade_count = _moo_fade_max << 8; } // out
 	else if( fade > 0 ){ _moo_fade_fade  =  1; _moo_fade_count =  0;                 } // in

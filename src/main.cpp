@@ -114,7 +114,10 @@ int main(int argc, char *argv[])
 	{
 		//printf("lol\n");
 		//printf("Memory: %d %d %d\n", mallinfo().arena, mallinfo().uordblks, mallinfo().fordblks);
-
+		scanKeys();
+		int keys = keysDown();
+		if(keys & KEY_START) pxtn->moo_set_fade(-1, 1);
+		if(keys & KEY_SELECT) pxtn->moo_set_fade(1, 1);
 		swiWaitForVBlank();
 	}
 	
