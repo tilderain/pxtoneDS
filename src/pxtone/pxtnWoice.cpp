@@ -437,7 +437,7 @@ pxtnERR pxtnWoice::Tone_Ready_envelope( int32_t sps )
 		{
 			for( e = 0; e < p_enve->head_num; e++ ) size += p_enve->points[ e ].x;
 			p_vi->env_size = (int32_t)( (double)size * sps / p_enve->fps );
-			if( !p_vi->env_size ) p_vi->env_size = 1;
+			//if( !p_vi->env_size ) p_vi->env_size = 1;
 
 			if( !pxtnMem_zero_alloc( (void**)&p_vi->p_env, p_vi->env_size                       ) ){ res = pxtnERR_memory; goto term; }
 			if( !pxtnMem_zero_alloc( (void**)&p_point    , sizeof(pxtnPOINT) * p_enve->head_num ) ){ res = pxtnERR_memory; goto term; }

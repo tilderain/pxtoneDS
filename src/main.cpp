@@ -25,7 +25,7 @@ pxtnService*   pxtn     = NULL ;
 
 void Timer_1ms()
 {
-		int p_req_size = 22;
+		int p_req_size = 22*4;
 		pxtn->Moo( NULL, p_req_size);
 }
 
@@ -79,12 +79,13 @@ int main(int argc, char *argv[])
 	nitroFSInit(NULL);
 
 	soundEnable();
-
+	printf("sup\n");
 	// INIT PXTONE.
 	pxtn = new pxtnService();
 	pxtn_err = pxtn->init(); if( pxtn_err != pxtnOK ) goto term;
 	if( !pxtn->set_destination_quality( _CHANNEL_NUM, _SAMPLE_PER_SECOND ) ) goto term;
 	
+	printf("pxtone INIT\n");
 
 	// SELECT MUSIC FILE.
 	strcpy(path_src, "nitro:/sample.ptcop");
@@ -104,16 +105,16 @@ int main(int argc, char *argv[])
 	}
 
 	TIMER2_CR = 0;
-	TIMER2_DATA = TIMER_FREQ_256(1000); //1000ms
+	TIMER2_DATA = TIMER_FREQ_256(250); //1000ms
 	TIMER2_CR = TIMER_ENABLE | ClockDivider_256 | TIMER_IRQ_REQ; 
 	irqEnable(IRQ_TIMER2);
-	//irqSet(IRQ_TIMER2, Timer_1ms);
+	irqSet(IRQ_TIMER2, Timer_1ms);
 
 	while (true)
 	{
 		//printf("lol\n");
 		//printf("Memory: %d %d %d\n", mallinfo().arena, mallinfo().uordblks, mallinfo().fordblks);
-		pxtn->Moo( NULL, 368);
+
 		swiWaitForVBlank();
 	}
 	

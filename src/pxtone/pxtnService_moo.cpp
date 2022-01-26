@@ -110,8 +110,6 @@ bool pxtnService::_moo_PXTONE_SAMPLE( int smp_num )
 {
 	if( !_moo_b_init ) return false;
 
-	// envelope..
-	for( int32_t u = 0; u < _unit_num;  u++ ) _units[ u ]->Tone_Envelope();
 
 	int32_t  clock = (int32_t)( _moo_smp_count / _moo_clock_rate );
 
@@ -191,7 +189,9 @@ bool pxtnService::_moo_PXTONE_SAMPLE( int smp_num )
 		case EVENTKIND_TUNING    : p_u->Tone_Tuning    ( *( (float*)(&_moo_p_eve->value) ) ); break;
 		}
 	}
-	
+	// envelope..
+
+	for( int32_t u = 0; u < _unit_num;  u++ ) _units[ u ]->Tone_Envelope(smp_num);
 	// sampling..
 	
 	for( int32_t u = 0; u < _unit_num; u++ )
@@ -257,7 +257,7 @@ bool pxtnService::_moo_PXTONE_SAMPLE( int smp_num )
 		if( !_moo_b_loop ) return false;
 		_moo_smp_count = _moo_smp_repeat;
 		_moo_p_eve     = evels->get_Records();
-		_moo_InitUnitTone();
+		//_moo_InitUnitTone();
 	}
 	return true;
 }

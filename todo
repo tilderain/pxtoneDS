@@ -4,3 +4,7 @@ implement libmptn table
 
 use 8 bps
 hz define
+
+get rid of delay,overdrive,pantime
+
+use ptnoise/ptvoice bitrate as is

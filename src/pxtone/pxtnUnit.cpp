@@ -153,7 +153,7 @@ void pxtnUnit::Tone_Portament( int32_t val ){ _portament_sample_num = val; }
 void pxtnUnit::Tone_GroupNo  ( int32_t val ){ _v_GROUPNO            = val; }
 void pxtnUnit::Tone_Tuning   ( float   val ){ _v_TUNING             = val; }
 
-void pxtnUnit::Tone_Envelope()
+void pxtnUnit::Tone_Envelope(int smp_num)
 {
 	if( !_p_woice ) return;
 
@@ -169,14 +169,14 @@ void pxtnUnit::Tone_Envelope()
 				if( p_vt->env_pos < p_vi->env_size )
 				{
 					p_vt->env_volume = p_vi->p_env[ p_vt->env_pos ];
-					p_vt->env_pos++;
+					p_vt->env_pos+= smp_num;
 				}
 			}
 			// release.
 			else
 			{
 				p_vt->env_volume = p_vt->env_start + ( 0 - p_vt->env_start ) * p_vt->env_pos / p_vi->env_release;
-				p_vt->env_pos++;
+				p_vt->env_pos+= smp_num;
 			}
 		}
 	}
@@ -223,13 +223,16 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 					channelStates[p_vt->channelId] = 1;
 
 					u8 volume = _v_VELOCITY * _v_VOLUME / 128;
-		
+
+					if (p_vi->env_size) volume = (volume * p_vt->env_volume) / 128;
+										
+
 					int pitchint = p_vt->offset_freq * _v_TUNING * freq * 22050/2;
 					u16 pitch = SOUND_FREQ(pitchint);
 
 					DC_FlushRange(p_vi->p_smp_w, p_vi->smp_body_w*2);
 					soundPlaySampleC(p_vi->p_smp_w, SoundFormat_16Bit, (u32)p_vi->smp_body_w*2, 
-						(u32)pitch, (u8)volume-1, (u8)_pan_vols[0]-1, 
+						(u32)pitch, (u8)volume, (u8)_pan_vols[0], 
 						_p_woice->get_voice(v)->voice_flags & PTV_VOICEFLAG_WAVELOOP, (u16)0, p_vt->channelId);
 
 					p_vt->volLast = volume;
@@ -246,11 +249,13 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 						p_vt->dirty = false;
 					}
 					u8 volume = _v_VELOCITY * _v_VOLUME / 128;
+					if (p_vi->env_size) volume = (volume * p_vt->env_volume) / 128;
+										
 					u8 pan = _pan_vols[0];
 					if(volume != p_vt->volLast)
 					{
 						p_vt->volLast = volume;
-						soundSetVolume(p_vt->channelId, volume-1);
+						soundSetVolume(p_vt->channelId, volume);
 					}
 					if(_key_now != p_vt->keyLast)
 					{
@@ -261,7 +266,7 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 					if(pan != p_vt->panLast)
 					{
 						p_vt->panLast = pan;
-						soundSetPan(p_vt->channelId, pan-1);
+						soundSetPan(p_vt->channelId, pan);
 					}
 
 				}
@@ -298,12 +303,16 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 						if(p_vt->volLast != 0)
 							soundSetVolume(p_vt->channelId, 0);
 						p_vt->volLast = 0;
+							//soundKill(p_vt->channelId);
+							//channelStates[p_vt->channelId] = 0;
+							//p_vt->channelId = -1;
 					}
 					else
 					{
-						if(p_vt->volLast != 0)
-							soundKill(p_vt->channelId);
-						p_vt->volLast = 0;
+						soundKill(p_vt->channelId);
+						channelStates[p_vt->channelId] = 0;
+						p_vt->channelId = -1;
+
 					}
 					//channelStates[p_vt->channelId] = 0;
 					//p_vt->channelId = -1;

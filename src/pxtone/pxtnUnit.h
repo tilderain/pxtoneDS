@@ -47,7 +47,7 @@ public :
 	void    Tone_Clear();
 		    
 	void    Tone_Reset_and_2prm( int32_t voice_idx, int32_t env_rls_clock, float offset_freq );
-	void    Tone_Envelope  ();
+	void    Tone_Envelope  (int smp_num);
 	void    Tone_KeyOn     ();
 	void    Tone_ZeroLives ();
 	void    Tone_Key       ( int32_t key );
