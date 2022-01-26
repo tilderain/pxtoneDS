@@ -1,0 +1,49 @@
+{
+    "tasks": [
+		{
+			"type": "shell",
+			"label": "kill things",
+			"command": "killall -3 desmume",
+			"args": []
+		},
+		{
+			"type": "shell",
+			"label": "make and launch desmume",
+			"command": "make NITRO=1 && nohup desmume --arm9gdb 30003 ${workspaceFolder}/pxtoneDS.nds & && sleep 1",
+			"args": [],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"isBackground": false,
+			"problemMatcher": [
+				{
+					"pattern": [
+						{
+							"regexp": "whats up gamers",
+							"file": 1,
+							"location": 2,
+							"message": 3
+						}
+					],
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": "^",
+						"endsPattern": "^",
+					}
+				}
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "Build",
+			"dependsOn": [
+				"make and launch desmume",
+				"launch desmume"
+			]
+		}
+	],
+    "version": "2.0.0"
+}
