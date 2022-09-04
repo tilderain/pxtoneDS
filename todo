@@ -7,4 +7,12 @@ hz define
 
 get rid of delay,overdrive,pantime
 
-use ptnoise/ptvoice bitrate as is
+--use ptnoise/ptvoice bitrate as is
+	pregenerate ptnoise wave
+
+soundfifo restart cmd
+soundfifo combining into different channels user_
+
+automatic incbingenerator
+
+async loading
