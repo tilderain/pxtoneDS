@@ -258,6 +258,7 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 					p_vt->dirty = false;
 
 					unit_vols[unit_no] = volume;
+					unit_freq[unit_no] = pitchint;
 				}
 				else
 				{
@@ -283,6 +284,7 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 					{
 						p_vt->keyLast = _key_now;
 						int pitchint = p_vt->offset_freq * _v_TUNING * freq * 22050/2 ;
+						unit_freq[unit_no] = pitchint;
 						soundSetFreq(p_vt->channelId, SOUND_FREQ(pitchint));
 					}
 					if(pan != p_vt->panLast)
@@ -323,7 +325,7 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 			{
 				if(p_vt->channelId != -1)
 				{
-					unit_vols[unit_no] = 10;
+					unit_vols[unit_no] = 1;
 					//printf("killing sound %d\n", p_vt->channelId);
 					if(_p_woice->get_voice(v)->voice_flags & PTV_VOICEFLAG_WAVELOOP)
 					{

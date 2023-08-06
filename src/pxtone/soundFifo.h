@@ -63,6 +63,7 @@ extern bool use16bit;
 extern bool enableVisualization;
 
 extern u8 unit_vols[64];
+extern u32 unit_freq[64];
 
 s8 getFreeChannel(void);
 

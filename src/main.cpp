@@ -29,6 +29,7 @@ bool song_init = false;
 bool enableVisualization = true;
 
 u8 unit_vols[64] = {10};
+u32 unit_freq[64] = {10};
 
 #define _CHANNEL_NUM           1
 #define _SAMPLE_PER_SECOND 11025
@@ -119,7 +120,7 @@ int main(int argc, char *argv[])
 	nitroFSInit(NULL);
 
 	soundEnable();
-	printf("sup\n");
+	printf("Pxtone\n");
 	// INIT PXTONE.
 	pxtn = new pxtnService();
 	pxtn_err = pxtn->init(); if( pxtn_err != pxtnOK ) goto term;
@@ -161,12 +162,12 @@ int main(int argc, char *argv[])
 	while (true)
 	{
 		glBegin2D();
-		oamSet(&oamMain, 0, 112, 64, 0, 0, SpriteSize_32x32, SpriteColorFormat_256Color, 
+		oamSet(&oamMain, 0, 112, 32, 0, 0, SpriteSize_32x32, SpriteColorFormat_256Color, 
 			sprite_gfx_mem, -1, false, false, false, false, false);
 		oamUpdate(&oamMain);
 		if(!song_init)
 		{
-			unit_vols[64] = {10};
+			memset(unit_vols, 1, 64);
 			name = browseForFile(extensionList);
 
 			// SELECT MUSIC FILE.
@@ -195,7 +196,8 @@ int main(int argc, char *argv[])
 		scanKeys();
 		int keys = keysDown();
 		int keys2 = keysHeld();
-		if(keys & KEY_START) enableVisualization ^= 1;
+		if(keys & KEY_START) 
+			enableVisualization ^= 1;
 		if(keys & KEY_B) {pxtn->moo_set_fade(-1, 1);  timer++;  }
 		if(timer && timer++ > 60) {song_init = false; timer = 0; killAllSounds();}
 
@@ -221,13 +223,17 @@ int main(int argc, char *argv[])
 		int progress = (pxtn->_moo_smp_end - pxtn->_moo_smp_count) / 4000 ;
 		progress = ((pxtn->_moo_smp_end / 4000) - progress);
 		printf("%d", progress);
-		glBoxFilled(16, 160, 16 + progress, 160, RGB15(50, 255, 50));
+		glBoxFilled(16, 180, 16 + progress, 180, RGB15(50, 255, 50));
 
 		if(enableVisualization)
+		{
 			for( int32_t u = 0; u < pxtn->_unit_num; u++ )
 			{
-				glBoxFilledTransparent(16 + (u*16), 120, 16 + (u*16) + 16, 140, RGB15(160, 255, 50), unit_vols[u]/4);
+				//printf("%d\n", unit_vols[u]);
+				glBoxFilledTransparent(16 + (u*16), 165-(unit_freq[u]/5000), 16 + (u*16) + 15, 170-(unit_freq[u]/5000), RGB15(160, 255, 50), (log((int)unit_vols[u]*2.4) * 100)/20);
 			}
+		}
+
 
 		glEnd2D();
 		glFlush(0);
