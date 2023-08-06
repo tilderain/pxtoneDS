@@ -29,11 +29,12 @@ bool song_init = false;
 
 pxtnService*   pxtn     = NULL ;
 
+int req_size = 22*4;
+
 void Timer_1ms()
 {
-		int p_req_size = 22*4;
 		if(song_init)
-			pxtn->Moo( NULL, p_req_size);
+			pxtn->Moo( NULL, req_size);
 }
 
 static bool _load_ptcop( pxtnService* pxtn, const char* path_src, pxtnERR* p_pxtn_err )
@@ -132,18 +133,36 @@ int main(int argc, char *argv[])
 				if( !pxtn->moo_preparation( &prep ) ) goto term;
 			}
 			song_init = true;
-			consoleClear();
+
 		}
 
 		//printf("lol\n");
 		//printf("Memory: %d %d %d\n", mallinfo().arena, mallinfo().uordblks, mallinfo().fordblks);
+		consoleClear();
 		scanKeys();
 		int keys = keysDown();
+		int keys2 = keysHeld();
 		if(keys & KEY_START) pxtn->moo_set_fade(-1, 1);
 		if(keys & KEY_SELECT) pxtn->moo_set_fade(1, 1);
-		if(keys & KEY_B) 
-		{pxtn->moo_set_fade(-1, 1);  timer++;  }
+		if(keys & KEY_B) {pxtn->moo_set_fade(-1, 1);  timer++;  }
 		if(timer && timer++ > 60) {song_init = false; timer = 0; killAllSounds();}
+
+		if(keys2 & KEY_A) req_size = 22*8;
+		else req_size = 22*4;
+
+		if(keys & KEY_LEFT) 
+		{
+			pxtn->_moo_smp_count -= 75000; 
+			if(pxtn->_moo_smp_count < 0) pxtn->_moo_smp_count = 0;
+			pxtn->_moo_p_eve     = pxtn->evels->get_Records();
+		}
+		if(keys & KEY_RIGHT) pxtn->_moo_smp_count += 75000;
+		
+
+
+		printf("Hold A to fast forward\nPress B to exit\n");
+
+		printf("\nPress Left and Right to seek\n");
 		swiWaitForVBlank();
 	}
 	

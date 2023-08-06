@@ -103,7 +103,7 @@ private:
 
 	int32_t  _moo_smp_smooth  ;
 	float    _moo_clock_rate  ; // as the sample
-	int32_t  _moo_smp_count   ;
+
 	int32_t  _moo_smp_start   ;
 	int32_t  _moo_smp_end     ;
 	int32_t  _moo_smp_repeat  ;
@@ -125,7 +125,7 @@ private:
 
 	int32_t* _moo_group_smps  ;
 
-	const EVERECORD*     _moo_p_eve;
+
 
 	pxtnPulse_Frequency* _moo_freq ;
 
@@ -239,6 +239,9 @@ public :
 	bool    moo_preparation( const pxtnVOMITPREPARATION *p_build );
 
 	bool    Moo( void* p_buf, int32_t size );
+
+	int32_t  _moo_smp_count   ;
+	const EVERECORD*     _moo_p_eve;
 };
 
 int32_t pxtnService_moo_CalcSampleNum( int32_t meas_num, int32_t beat_num, int32_t sps, float beat_tempo );
