@@ -20,6 +20,10 @@ using namespace std;
 
 #include "file_browse.h"
 
+#include "gl2d.h"
+
+#include "pxtoneicon.h"
+
 bool use16bit = false;
 bool song_init = false;
 
@@ -73,6 +77,20 @@ static bool _sampling_func( void *user, void *buf, int *p_res_size, int *p_req_s
 }
 
 
+int gAtlas16Color1;
+int gAtlas16Color2;
+
+int gAtlas256Color;
+
+int gTextureLoaded = 0;
+
+int gTextureWidth1024 = TEXTURE_SIZE_1024;
+int gTextureHeight512 = TEXTURE_SIZE_512;
+
+int gTextureWidth512 = TEXTURE_SIZE_512;
+int gTextureHeight256 = TEXTURE_SIZE_256;
+
+void* gCurrentPalette;
 
 
 int main(int argc, char *argv[])
@@ -88,6 +106,8 @@ int main(int argc, char *argv[])
 	string name;
 
 	int timer = 0;
+
+	u16* sprite_gfx_mem = oamAllocateGfx(&oamMain, SpriteSize_32x32, SpriteColorFormat_256Color);
 
 
 
@@ -110,8 +130,36 @@ int main(int argc, char *argv[])
 	irqSet(IRQ_TIMER2, Timer_1ms);
 
 
+
+
+
+
+	///GFX
+
+	videoSetMode( MODE_0_3D );
+
+    vramSetBankA( VRAM_A_MAIN_SPRITE );     
+
+	oamInit(&oamMain, SpriteMapping_1D_128, false);
+
+	dmaCopy(pxtoneiconPal, SPRITE_PALETTE, 512);
+	
+	glScreen2D();
+	glEnable(GL_TEXTURE_2D);
+
+	glBegin2D();
+
+	consoleDemoInit();
+
+	dmaCopy(pxtoneiconTiles, sprite_gfx_mem, 32*32);
+
+
 	while (true)
 	{
+		glBegin2D();
+		oamSet(&oamMain, 0, 112, 64, 0, 0, SpriteSize_32x32, SpriteColorFormat_256Color, 
+			sprite_gfx_mem, -1, false, false, false, false, false);
+		oamUpdate(&oamMain);
 		if(!song_init)
 		{
 			name = browseForFile(extensionList);
@@ -152,17 +200,26 @@ int main(int argc, char *argv[])
 
 		if(keys & KEY_LEFT) 
 		{
-			pxtn->_moo_smp_count -= 75000; 
+			pxtn->_moo_smp_count -= 50000; 
 			if(pxtn->_moo_smp_count < 0) pxtn->_moo_smp_count = 0;
 			pxtn->_moo_p_eve     = pxtn->evels->get_Records();
 		}
-		if(keys & KEY_RIGHT) pxtn->_moo_smp_count += 75000;
+		if(keys & KEY_RIGHT) pxtn->_moo_smp_count += 50000;
 		
 
 
 		printf("Hold A to fast forward\nPress B to exit\n");
 
 		printf("\nPress Left and Right to seek\n");
+		
+		int progress = (pxtn->_moo_smp_end - pxtn->_moo_smp_count) / 4000 ;
+		progress = ((pxtn->_moo_smp_end / 4000) - progress);
+		printf("%d", progress);
+		glBoxFilled(16, 160, 16 + progress, 160, RGB15(50, 255, 50));
+
+			glEnd2D();
+			glFlush(0);
+
 		swiWaitForVBlank();
 	}
 	

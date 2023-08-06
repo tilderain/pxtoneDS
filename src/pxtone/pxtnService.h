@@ -105,7 +105,7 @@ private:
 	float    _moo_clock_rate  ; // as the sample
 
 	int32_t  _moo_smp_start   ;
-	int32_t  _moo_smp_end     ;
+
 	int32_t  _moo_smp_repeat  ;
 		
 	int32_t  _moo_fade_count  ;
@@ -241,6 +241,7 @@ public :
 	bool    Moo( void* p_buf, int32_t size );
 
 	int32_t  _moo_smp_count   ;
+	int32_t  _moo_smp_end     ;
 	const EVERECORD*     _moo_p_eve;
 };
 
