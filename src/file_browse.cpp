@@ -152,7 +152,7 @@ string browseForFile (const vector<string>& extensionList) {
 	int fileOffset = 0;
 	vector<DirEntry> dirContents;
 
-#ifdef NITRO
+#ifdef NITROFS
 	chdir("nitro:/");
 #endif
 	getDirectoryContents (dirContents, extensionList);
