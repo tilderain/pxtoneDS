@@ -18,8 +18,10 @@ using namespace std;
 
 #include "./pxtone/soundFifo.h"
 
-bool use16bit = false;
+#include "file_browse.h"
 
+bool use16bit = false;
+bool song_init = false;
 
 #define _CHANNEL_NUM           1
 #define _SAMPLE_PER_SECOND 11025
@@ -30,7 +32,8 @@ pxtnService*   pxtn     = NULL ;
 void Timer_1ms()
 {
 		int p_req_size = 22*4;
-		pxtn->Moo( NULL, p_req_size);
+		if(song_init)
+			pxtn->Moo( NULL, p_req_size);
 }
 
 static bool _load_ptcop( pxtnService* pxtn, const char* path_src, pxtnERR* p_pxtn_err )
@@ -79,6 +82,14 @@ int main(int argc, char *argv[])
 	pxtnERR        pxtn_err = pxtnERR_VOID;
 	char          path_src[ 255 ] = {0};
 
+	vector<string> extensionList = {"ptcop"};
+
+	string name;
+
+	int timer = 0;
+
+
+
 	consoleDemoInit();
 	nitroFSInit(NULL);
 
@@ -91,37 +102,48 @@ int main(int argc, char *argv[])
 	
 	printf("pxtone INIT\n");
 
-	// SELECT MUSIC FILE.
-	strcpy(path_src, "nitro:/sample.ptcop");
-	// LOAD MUSIC FILE.
-	if( !_load_ptcop( pxtn, path_src, &pxtn_err ) ) goto term;
-
-	// PREPARATION PLAYING MUSIC.
-	{
-		int32_t smp_total = pxtn->moo_get_total_sample();
-
-		pxtnVOMITPREPARATION prep = {0};
-		prep.flags          |= pxtnVOMITPREPFLAG_loop;
-		prep.start_pos_float =     0;
-		prep.master_volume   = 0.80f;
-
-		if( !pxtn->moo_preparation( &prep ) ) goto term;
-	}
-
 	TIMER2_CR = 0;
 	TIMER2_DATA = TIMER_FREQ_256(250); //1000ms
 	TIMER2_CR = TIMER_ENABLE | ClockDivider_256 | TIMER_IRQ_REQ; 
 	irqEnable(IRQ_TIMER2);
 	irqSet(IRQ_TIMER2, Timer_1ms);
 
+
 	while (true)
 	{
+		if(!song_init)
+		{
+			name = browseForFile(extensionList);
+
+			// SELECT MUSIC FILE.
+			strcpy(path_src, name.c_str());
+			// LOAD MUSIC FILE.
+			if( !_load_ptcop( pxtn, path_src, &pxtn_err ) ) goto term;
+
+			// PREPARATION PLAYING MUSIC.
+			{
+				int32_t smp_total = pxtn->moo_get_total_sample();
+
+				pxtnVOMITPREPARATION prep = {0};
+				prep.flags          |= pxtnVOMITPREPFLAG_loop;
+				prep.start_pos_float =     0;
+				prep.master_volume   = 0.80f;
+
+				if( !pxtn->moo_preparation( &prep ) ) goto term;
+			}
+			song_init = true;
+			consoleClear();
+		}
+
 		//printf("lol\n");
 		//printf("Memory: %d %d %d\n", mallinfo().arena, mallinfo().uordblks, mallinfo().fordblks);
 		scanKeys();
 		int keys = keysDown();
 		if(keys & KEY_START) pxtn->moo_set_fade(-1, 1);
 		if(keys & KEY_SELECT) pxtn->moo_set_fade(1, 1);
+		if(keys & KEY_B) 
+		{pxtn->moo_set_fade(-1, 1);  timer++;  }
+		if(timer && timer++ > 60) {song_init = false; timer = 0; killAllSounds();}
 		swiWaitForVBlank();
 	}
 	

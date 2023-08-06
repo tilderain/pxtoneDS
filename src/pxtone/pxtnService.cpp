@@ -222,6 +222,7 @@ pxtnERR pxtnService::tones_ready()
 	}
 	for( int32_t i = 0; i < _woice_num; i++ )
 	{
+		printf("%d/%d ", i+1, _woice_num);
 		res = _woices[ i ]->Tone_Ready( _ptn_bldr, _dst_sps );
 		if( res != pxtnOK ) return res;
 	}

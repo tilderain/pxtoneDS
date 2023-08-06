@@ -143,3 +143,14 @@ int soundMicRecord(void *buffer, u32 bufferLength, MicFormat format, int freq, M
 void soundMicOff(void){
 	fifoSendValue32(FIFO_SOUND, MIC_STOP);
 }
+
+void killAllSounds()
+{
+	soundMicOff();
+
+	for (int i=0;i<NUM_CHANNELS;i++)
+	{
+		channelStates[i] = 0;
+	}
+}
+

@@ -63,6 +63,9 @@ extern bool use16bit;
 
 s8 getFreeChannel(void);
 
+
+void killAllSounds();
+
 #ifdef __cplusplus
 }
 #endif
