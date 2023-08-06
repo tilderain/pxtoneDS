@@ -5,6 +5,8 @@
 #include "./pxtnDescriptor.h"
 #include "./pxtnPulse_PCM.h"
 
+#include "soundFifo.h"
+
 typedef struct
 {
 	uint16_t formatID;     // PCM:0x0001
@@ -327,7 +329,7 @@ bool pxtnPulse_PCM::_Convert_BitPerSample( int32_t new_bps )
 		for( a = 0; a < sample_size; a += 2 )
 		{
 			temp1 = *((int16_t*)(&_p_smp[a]));
-			temp1 = (temp1/0x100) + 128;
+			temp1 = (temp1/0x100);
 			p_work[b] = (uint8_t)temp1;
 			b++;
 		}
@@ -525,6 +527,14 @@ pxtnERR pxtnPulse_PCM::Copy( pxtnPulse_PCM *p_dst ) const
 	pxtnERR res = pxtnERR_VOID;
 	if( !_p_smp ){ p_dst->Release(); return pxtnOK; }
 	res = p_dst->Create( _ch, _sps, _bps, _smp_body ); if( res != pxtnOK ) return res;
+	if (_bps == 8 && !use16bit)
+	{
+		for(int i=0;i<_smp_head + _smp_body + _smp_tail;i++)
+		{
+			_p_smp[i] -= 128;
+		}
+	}
+
 	memcpy( p_dst->_p_smp, _p_smp, ( _smp_head + _smp_body + _smp_tail ) * _ch * _bps / 8 );
 	return pxtnOK;
 }

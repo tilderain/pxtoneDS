@@ -59,6 +59,8 @@ void soundPlaySampleC(const void* data, SoundFormat format, u32 dataSize, u16 fr
 #define NUM_CHANNELS 16
 extern int channelStates[NUM_CHANNELS];
 
+extern bool use16bit;
+
 s8 getFreeChannel(void);
 
 #ifdef __cplusplus

@@ -8,6 +8,8 @@
 
 #include "nds.h"
 
+#include "soundFifo.h"
+
 pxtnUnit::pxtnUnit()
 {
 	_bPlayed   = true;
@@ -235,8 +237,15 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 
 					u8 pan = _pan_vols[0];
 					if(pan != 0) pan -= 1;
-					DC_FlushRange(p_vi->p_smp_w, p_vi->smp_body_w*2);
-					soundPlaySampleC(p_vi->p_smp_w, SoundFormat_16Bit, (u32)p_vi->smp_body_w*2, 
+
+					SoundFormat bits = SoundFormat_8Bit;
+					char mult = 1;
+					if(use16bit){bits = SoundFormat_16Bit; mult = 2;}
+
+					DC_FlushRange(p_vi->p_smp_w, p_vi->smp_body_w*mult);
+
+
+					soundPlaySampleC(p_vi->p_smp_w, bits, (u32)p_vi->smp_body_w*mult, 
 						(u32)pitch, (u8)volume, (u8)pan, 
 						_p_woice->get_voice(v)->voice_flags & PTV_VOICEFLAG_WAVELOOP, (u16)0, p_vt->channelId);
 

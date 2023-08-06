@@ -8,6 +8,8 @@
 
 #include "./pxtnPulse_Oggv.h"
 
+#include "soundFifo.h"
+
 typedef struct
 {
     char*   p_buf; // ogg vorbis-data on memory.s
@@ -211,10 +213,15 @@ pxtnERR pxtnPulse_Oggv::Decode( pxtnPulse_PCM * p_pcm ) const
 	{
 		int32_t smp_num = (int32_t)ov_pcm_total( &vf, -1 );
 		uint32_t bytes;
+		//char bits = 8;
+		//char mult = 1;
+		char bits = 16;
+		char mult = 2;
+		//if(use16bit) { bits = 16; mult = 2; }
 
-		bytes = vi->channels * 2 * smp_num;
+		bytes = vi->channels * mult * smp_num;
 
-		res = p_pcm->Create( vi->channels, vi->rate, 16, smp_num );
+		res = p_pcm->Create( vi->channels, vi->rate, bits, smp_num );
 		if( res != pxtnOK ) goto term;
 	}
     // decode..

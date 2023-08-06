@@ -13,6 +13,7 @@
 #define _smp_num_rand    44100
 #define _smp_num         (int32_t)( _BASIC_SPS / _BASIC_FREQUENCY )
 
+#include "soundFifo.h"
 
 enum _RANDOMTYPE
 {
@@ -452,7 +453,7 @@ pxtnPulse_PCM *pxtnPulse_NoiseBuilder::BuildNoise( pxtnPulse_Noise *p_noise, int
 			byte4 = (int32_t)store;
 			if( byte4 >  _SAMPLING_TOP ) byte4 =  _SAMPLING_TOP;
 			if( byte4 < -_SAMPLING_TOP ) byte4 = -_SAMPLING_TOP;
-			if( bps ==  8 ){ *           p   = (unsigned char)( ( byte4 >> 8 ) + 128 ); p += 1; } //  8bit
+			if( bps ==  8 ){ *           p   = (unsigned char)( ( byte4 >> 8 ) ); p += 1; } //  8bit
 			else           { *( (short *)p ) = (short        )    byte4               ; p += 2; } // 16bit
 		}
 

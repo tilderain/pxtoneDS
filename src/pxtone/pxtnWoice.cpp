@@ -6,6 +6,8 @@
 #include "./pxtnEvelist.h"
 #include "./pxtnMem.h"
 
+#include "soundFifo.h"
+
 pxtnWoice::pxtnWoice()
 {
 	memset( _name_buf, 0, sizeof(_name_buf) );
@@ -301,7 +303,7 @@ static void _UpdateWavePTV( pxtnVOICEUNIT* p_vc, pxtnVOICEINSTANCE* p_vi, int32_
 				if( work >  1.0 ) work =  1.0;
 				if( work < -1.0 ) work = -1.0;
 				long_  = (int32_t )( work * 127 );
-				p[ s * ch + c ] = (uint8_t)(long_ + 128);
+				p[ s * ch + c ] = (uint8_t)(long_);
 			}
 		}
 
@@ -336,6 +338,7 @@ pxtnERR pxtnWoice::Tone_Ready_sample( const pxtnPulse_NoiseBuilder *ptn_bldr )
 	int32_t            ch    =     1;
 	int32_t            sps   = 44100;
 	int32_t            bps   =    16;
+	if(!use16bit) bps = 8;
 
 	for( int32_t v = 0; v < _voice_num; v++ )
 	{
@@ -505,6 +508,16 @@ term:
 
 pxtnERR pxtnWoice::Tone_Ready( const pxtnPulse_NoiseBuilder *ptn_bldr, int32_t sps )
 {
+	enum pxtnWOICETYPE
+{
+	pxtnWOICE_None = 0,
+	pxtnWOICE_PCM ,
+	pxtnWOICE_PTV ,
+	pxtnWOICE_PTN ,
+	pxtnWOICE_OGGV,
+};
+	const char *types[] = {"None", "PCM", "PTV", "PTN", "OGGV"};
+	printf("%s %s\n", _name_buf, types[_type]);
 	pxtnERR res = pxtnERR_VOID;
 	res = Tone_Ready_sample  ( ptn_bldr ); if( res != pxtnOK ) return res;
 	res = Tone_Ready_envelope( sps      ); if( res != pxtnOK ) return res;

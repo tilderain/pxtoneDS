@@ -16,6 +16,10 @@ using namespace std;
 
 #include <malloc.h>
 
+#include "./pxtone/soundFifo.h"
+
+bool use16bit = false;
+
 
 #define _CHANNEL_NUM           1
 #define _SAMPLE_PER_SECOND 11025
