@@ -66,7 +66,7 @@ private:
 	int32_t _delay_max;	int32_t _delay_num;	pxtnDelay     **_delays;
 	int32_t _ovdrv_max;	int32_t _ovdrv_num;	pxtnOverDrive **_ovdrvs;
 	int32_t _woice_max;	int32_t _woice_num;	pxtnWoice     **_woices;
-	int32_t _unit_max ;	int32_t _unit_num ;	pxtnUnit      **_units ;
+	int32_t _unit_max ;	pxtnUnit      **_units ;
 
 	int32_t _group_num;
 
@@ -243,6 +243,8 @@ public :
 	int32_t  _moo_smp_count   ;
 	int32_t  _moo_smp_end     ;
 	const EVERECORD*     _moo_p_eve;
+
+	int32_t _unit_num;
 };
 
 int32_t pxtnService_moo_CalcSampleNum( int32_t meas_num, int32_t beat_num, int32_t sps, float beat_tempo );

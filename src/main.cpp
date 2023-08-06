@@ -21,11 +21,14 @@ using namespace std;
 #include "file_browse.h"
 
 #include "gl2d.h"
-
+#include "fat.h"
 #include "pxtoneicon.h"
 
 bool use16bit = false;
 bool song_init = false;
+bool enableVisualization = true;
+
+u8 unit_vols[64] = {10};
 
 #define _CHANNEL_NUM           1
 #define _SAMPLE_PER_SECOND 11025
@@ -112,6 +115,7 @@ int main(int argc, char *argv[])
 
 
 	consoleDemoInit();
+	//fatInitDefault();
 	nitroFSInit(NULL);
 
 	soundEnable();
@@ -162,6 +166,7 @@ int main(int argc, char *argv[])
 		oamUpdate(&oamMain);
 		if(!song_init)
 		{
+			unit_vols[64] = {10};
 			name = browseForFile(extensionList);
 
 			// SELECT MUSIC FILE.
@@ -190,8 +195,7 @@ int main(int argc, char *argv[])
 		scanKeys();
 		int keys = keysDown();
 		int keys2 = keysHeld();
-		if(keys & KEY_START) pxtn->moo_set_fade(-1, 1);
-		if(keys & KEY_SELECT) pxtn->moo_set_fade(1, 1);
+		if(keys & KEY_START) enableVisualization ^= 1;
 		if(keys & KEY_B) {pxtn->moo_set_fade(-1, 1);  timer++;  }
 		if(timer && timer++ > 60) {song_init = false; timer = 0; killAllSounds();}
 
@@ -211,14 +215,22 @@ int main(int argc, char *argv[])
 		printf("Hold A to fast forward\nPress B to exit\n");
 
 		printf("\nPress Left and Right to seek\n");
+
+		printf("\nPress Start to toggle visual\n");
 		
 		int progress = (pxtn->_moo_smp_end - pxtn->_moo_smp_count) / 4000 ;
 		progress = ((pxtn->_moo_smp_end / 4000) - progress);
 		printf("%d", progress);
 		glBoxFilled(16, 160, 16 + progress, 160, RGB15(50, 255, 50));
 
-			glEnd2D();
-			glFlush(0);
+		if(enableVisualization)
+			for( int32_t u = 0; u < pxtn->_unit_num; u++ )
+			{
+				glBoxFilledTransparent(16 + (u*16), 120, 16 + (u*16) + 16, 140, RGB15(160, 255, 50), unit_vols[u]/4);
+			}
+
+		glEnd2D();
+		glFlush(0);
 
 		swiWaitForVBlank();
 	}

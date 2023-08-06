@@ -198,7 +198,7 @@ bool pxtnService::_moo_PXTONE_SAMPLE( int smp_num )
 	{
 		int32_t  key_now = _units[ u ]->Tone_Increment_Key(0);
 		_units[ u ]->Tone_Sample( _moo_b_mute_by_unit, _dst_ch_num, _moo_time_pan_index, _moo_smp_smooth,
-			_moo_freq->Get2( key_now ) *_moo_smp_stride, _moo_fade_fade, _moo_fade_count, _moo_fade_max);
+			_moo_freq->Get2( key_now ) *_moo_smp_stride, _moo_fade_fade, _moo_fade_count, _moo_fade_max, u);
 	}
 
 	/*for( int32_t ch = 0; ch < _dst_ch_num; ch++ )

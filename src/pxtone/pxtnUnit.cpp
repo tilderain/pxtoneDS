@@ -9,6 +9,9 @@
 #include "nds.h"
 
 #include "soundFifo.h"
+#include "./gl2d.h"
+
+void glBoxFilledTransparent( int x1, int y1, int x2, int y2, int color, u32 alpha);
 
 pxtnUnit::pxtnUnit()
 {
@@ -193,7 +196,7 @@ void pxtnUnit::Tone_Envelope(int smp_num)
 #define SOUND_FREQ(n)	((-0x1000000 / (n)))
 
 void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_pan_index, int32_t  smooth_smp , float freq,
-	int _moo_fade_fade, int _moo_fade_count, int _moo_fade_max)
+	int _moo_fade_fade, int _moo_fade_count, int _moo_fade_max, int unit_no)
 {
 	if( !_p_woice ) return;
 
@@ -253,6 +256,8 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 					p_vt->keyLast = _key_now;
 					p_vt->panLast = pan;
 					p_vt->dirty = false;
+
+					unit_vols[unit_no] = volume;
 				}
 				else
 				{
@@ -286,7 +291,11 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 						soundSetPan(p_vt->channelId, pan);
 					}
 
+					unit_vols[unit_no] = volume;
+
 				}
+
+
 
 
 				//int32_t pos = (int32_t)p_vt->smp_pos * 4 + ch * 2;
@@ -314,6 +323,7 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 			{
 				if(p_vt->channelId != -1)
 				{
+					unit_vols[unit_no] = 10;
 					//printf("killing sound %d\n", p_vt->channelId);
 					if(_p_woice->get_voice(v)->voice_flags & PTV_VOICEFLAG_WAVELOOP)
 					{

@@ -60,6 +60,9 @@ void soundPlaySampleC(const void* data, SoundFormat format, u32 dataSize, u16 fr
 extern int channelStates[NUM_CHANNELS];
 
 extern bool use16bit;
+extern bool enableVisualization;
+
+extern u8 unit_vols[64];
 
 s8 getFreeChannel(void);
 

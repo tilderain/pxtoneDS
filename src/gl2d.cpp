@@ -16,7 +16,7 @@
 
  v16 g_depth = 0;
 
-int gCurrentTexture = 0;
+ //int gCurrentTexture = 0;
  int gCurPaletteOffset = 0;
  int gCurTexType = 0;
 
