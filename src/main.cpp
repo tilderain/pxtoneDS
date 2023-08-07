@@ -116,8 +116,11 @@ int main(int argc, char *argv[])
 
 
 	consoleDemoInit();
-	//fatInitDefault();
+#ifndef NITROFS
+	fatInitDefault();
+#else
 	nitroFSInit(NULL);
+#endif
 
 	soundEnable();
 	printf("Pxtone\n");
