@@ -24,7 +24,7 @@ using namespace std;
 #include "fat.h"
 #include "pxtoneicon.h"
 
-bool use16bit = false;
+bool use16bit = true;
 bool song_init = false;
 bool enableVisualization = true;
 
