@@ -214,6 +214,7 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 			pxtnVOICETONE*           p_vt = &_vts                 [ v ];
 			const pxtnVOICEINSTANCE* p_vi = _p_woice->get_instance( v );
 
+
 			//int32_t  work = 0;
 			//printf("life%d \n", p_vt->life_count);
 			if( p_vt->life_count > 0 )
@@ -225,6 +226,7 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 					p_vt->channelId = getFreeChannel();
 
 					if(p_vt->channelId == -1) continue;
+					if(use_channel_no) unit_no = p_vt->channelId;
 					//printf("new sound wooo   %d\n", p_vt->channelId);
 					channelStates[p_vt->channelId] = 1;
 
@@ -245,10 +247,10 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 					char mult = 1;
 					if(use16bit){bits = SoundFormat_16Bit; mult = 2;}
 
-					DC_FlushRange(p_vi->p_smp_w, p_vi->smp_body_w*mult);
+					DC_FlushRange(p_vi->p_smp_w, (p_vi->smp_head_w + p_vi->smp_body_w + p_vi->smp_tail_w)*mult);
 
 
-					soundPlaySampleC(p_vi->p_smp_w, bits, (u32)p_vi->smp_body_w*mult, 
+					soundPlaySampleC(p_vi->p_smp_w, bits, (u32)(p_vi->smp_head_w + p_vi->smp_body_w + p_vi->smp_tail_w)*mult, 
 						(u32)pitch, (u8)volume, (u8)pan, 
 						_p_woice->get_voice(v)->voice_flags & PTV_VOICEFLAG_WAVELOOP, (u16)0, p_vt->channelId);
 
@@ -262,6 +264,7 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 				}
 				else
 				{
+					if(use_channel_no) unit_no = p_vt->channelId;
 					if(p_vt->dirty)
 					{
 						soundKill(p_vt->channelId);
@@ -296,8 +299,8 @@ void pxtnUnit::Tone_Sample( bool b_mute_by_unit, int32_t ch_num, int32_t  time_p
 					unit_vols[unit_no] = volume;
 
 				}
-
-
+				if(use_channel_no) unit_no = p_vt->channelId;
+				unit_loop[unit_no] = _p_woice->get_voice(v)->voice_flags & PTV_VOICEFLAG_WAVELOOP;
 
 
 				//int32_t pos = (int32_t)p_vt->smp_pos * 4 + ch * 2;

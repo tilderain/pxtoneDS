@@ -30,6 +30,9 @@ bool enableVisualization = true;
 
 u8 unit_vols[64] = {10};
 u32 unit_freq[64] = {10};
+bool unit_loop[64] = {false};
+
+bool use_channel_no = false;
 
 #define _CHANNEL_NUM           1
 #define _SAMPLE_PER_SECOND 11025
@@ -226,6 +229,7 @@ int main(int argc, char *argv[])
 		int progress = (pxtn->_moo_smp_end - pxtn->_moo_smp_count) / 4000 ;
 		progress = ((pxtn->_moo_smp_end / 4000) - progress);
 		printf("%d", progress);
+		glBoxFilled(0, 0, 256, 192, RGB15(0, 0, 2));
 		glBoxFilled(16, 180, 16 + progress, 180, RGB15(50, 255, 50));
 
 		if(enableVisualization)
@@ -233,7 +237,18 @@ int main(int argc, char *argv[])
 			for( int32_t u = 0; u < pxtn->_unit_num; u++ )
 			{
 				//printf("%d\n", unit_vols[u]);
-				glBoxFilledTransparent(16 + (u*16), 165-(unit_freq[u]/5000), 16 + (u*16) + 15, 170-(unit_freq[u]/5000), RGB15(160, 255, 50), (log((int)unit_vols[u]*2.4) * 100)/20);
+				u16 col1 = RGB15(160, 255, 50);
+				u16 col2 = RGB15(0/8, 240/8, 128/8);
+				u16 col; 
+				if(unit_loop[u]) col = col2;
+				else col = col1;
+				if(!use_channel_no)
+					glBoxFilledTransparent(128 + (u*16) - (pxtn->_unit_num * 8), 165-(unit_freq[u]/4000), 
+										128 + (u*16) + 15 - (pxtn->_unit_num * 8), 170-(unit_freq[u]/4000), col, (log((int)unit_vols[u]*2.4) * 100)/20);
+				else
+					glBoxFilledTransparent(0 + (u*16), 165-(unit_freq[u]/4000), 
+					0 + (u*16) + 15, 170-(unit_freq[u]/4000), col, (log((int)unit_vols[u]*2.4) * 100)/20);
+
 			}
 		}
 

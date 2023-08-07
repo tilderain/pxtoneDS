@@ -60,7 +60,7 @@ public :
 	void    Tone_GroupNo   ( int32_t val );
 	void    Tone_Tuning    ( float   val );
 		    			   
-	void    Tone_Sample    ( bool b_mute_by_unit, int32_t ch_num, int32_t time_pan_index, int32_t smooth_smp, float freq, int _moo_fade_fade, int _moo_fade_count, int _moo_fade_max, int unit_no );
+	void    Tone_Sample    ( bool b_mute_by_unit, int32_t ch_num, int32_t time_pan_index, int32_t smooth_smp, float freq, int _moo_fade_fade, int _moo_fade_count, int _moo_fade_max, int unit_no);
 	void    Tone_Supple    ( int32_t *group_smps, int32_t ch_num, int32_t time_pan_index ) const;
 	int32_t Tone_Increment_Key   ( int smp_num );
 	void    Tone_Increment_Sample( float freq, int smp_num );
