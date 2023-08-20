@@ -175,6 +175,7 @@ void pxtnUnit::Tone_Envelope(int smp_num)
 				{
 					p_vt->env_volume = p_vi->p_env[ p_vt->env_pos ];
 					p_vt->env_pos+= smp_num;
+					if(p_vt->env_pos >= p_vi->env_size) p_vt->env_pos = p_vi->env_size - 1;
 				}
 			}
 			// release.
@@ -182,6 +183,7 @@ void pxtnUnit::Tone_Envelope(int smp_num)
 			{
 				p_vt->env_volume = p_vt->env_start + ( 0 - p_vt->env_start ) * p_vt->env_pos / p_vi->env_release;
 				p_vt->env_pos+= smp_num;
+				if(p_vt->env_pos >= p_vi->env_size) p_vt->env_pos = p_vi->env_size - 1;
 			}
 		}
 	}
